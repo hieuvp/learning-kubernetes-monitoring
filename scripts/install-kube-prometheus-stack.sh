@@ -7,6 +7,7 @@ minikube start
 
 kubectl create namespace kube-prometheus-stack
 
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
 helm install kube-prometheus-stack ./kube-prometheus-stack \
   --namespace=kube-prometheus-stack \
   --set-string namespaceOverride=kube-prometheus-stack
