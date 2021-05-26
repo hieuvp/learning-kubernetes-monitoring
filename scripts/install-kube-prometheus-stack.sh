@@ -3,7 +3,7 @@
 set -eoux pipefail
 
 minikube delete
-minikube start
+minikube start --driver=virtualbox
 
 kubectl create namespace kube-prometheus-stack
 
