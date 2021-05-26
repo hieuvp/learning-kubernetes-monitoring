@@ -51,7 +51,8 @@ helm install k8s-dashboard --namespace monitoring k8s-dashboard/kubernetes-dashb
 }
 ```
 
-Establish permissions within the cluster to allow the Kubernetes Dashboard to read and write all cluster resources. In the terminal execute the following command:
+Establish permissions within the cluster to allow the Kubernetes Dashboard to read and write all cluster resources.
+In the terminal execute the following command:
 
 ```shell
 kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=monitoring:k8sdash-serviceaccount
@@ -69,5 +70,36 @@ kubectl patch service k8s-dashboard -n monitoring -p '{"spec":{"ports":[{"nodePo
 ```
 
 ## Install and Configure Prometheus
+
+Using Helm, install Prometheus using the publicly available Prometheus Helm Chart.
+Deploy Prometheus into the monitoring namespace within the lab provided cluster.
+In the terminal execute the following commands:
+
+```shell
+{
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add stable https://charts.helm.sh/stable
+helm repo update
+helm install prometheus --namespace monitoring --values ./code/prometheus/values.yml prometheus-community/prometheus --version 13.0.0
+}
+```
+
+Patch the Prometheus Node Exporter DaemonSet to ensure that Prometheus can collect Memory and CPU node metrics.
+In the terminal execute the following command:
+
+```shell
+kubectl patch daemonset prometheus-node-exporter -n monitoring -p '{"spec":{"template":{"metadata":{"annotations":{"prometheus.io/scrape": "true"}}}}}'
+```
+
+The Prometheus web admin interface now needs to be exposed to the Internet so that you can browse to it.
+To do so, create a new NodePort based Service, and expose the web admin interface on port 30900.
+In the terminal execute the following command:
+
+```shell
+{
+kubectl expose deployment prometheus-server --type=NodePort --name=prometheus-main --port=30900 --target-port=9090 -n monitoring
+kubectl patch service prometheus-main -n monitoring -p '{"spec":{"ports":[{"nodePort": 30900, "port": 30900, "protocol": "TCP", "targetPort": 9090}]}}'
+}
+```
 
 ## Install and Configure Grafana
