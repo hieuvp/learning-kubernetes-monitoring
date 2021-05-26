@@ -11,6 +11,8 @@
 - [Install and Configure K8S Dashboard](#install-and-configure-k8s-dashboard)
 - [Install and Configure Prometheus](#install-and-configure-prometheus)
 - [Install and Configure Grafana](#install-and-configure-grafana)
+  - [Data Source](#data-source)
+  - [Dashboard](#dashboard)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -134,6 +136,8 @@ In the terminal execute the following command:
 kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
+### Data Source
+
 1. Within the **Data Sources** section, click on the **Add your first data source** option:
 1. In the **Add data source** view, select the **Prometheus** option by clicking on it's **Select** button:
 1. In the **Data Sources / Prometheus** configuration view
@@ -141,6 +145,8 @@ kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-pass
    Leave all other default settings as is.
    In particular its important to leave the **Name** field set to **Prometheus**.
    Complete the Prometheus data source setup by clicking on the **Save & Test** button at the bottom.
+
+### Dashboard
 
 1. Return to the IDE.
    Within the Files tab on the left handside menu, open the `project/code/grafana` directory
