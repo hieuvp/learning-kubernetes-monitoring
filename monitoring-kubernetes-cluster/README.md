@@ -103,3 +103,52 @@ kubectl patch service prometheus-main -n monitoring -p '{"spec":{"ports":[{"node
 ```
 
 ## Install and Configure Grafana
+
+Using Helm, install Grafana using the publicly available Grafana Helm Chart.
+You will deploy Grafana into the monitoring namespace within the lab provided cluster.
+In the terminal execute the following commands:
+
+```shell
+{
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install grafana --namespace monitoring grafana/grafana --version 6.1.14
+}
+```
+
+The Grafana web admin interface now needs to be exposed to the Internet.
+To do so, create a new NodePort based Service, exposing the web admin interface on port 30900.
+In the terminal execute the following command:
+
+```shell
+{
+
+kubectl expose deployment grafana --type=NodePort --name=grafana-main --port=30300 --target-port=3000 -n monitoring
+
+kubectl patch service grafana-main -n monitoring -p '{"spec":{"ports":[{"nodePort": 30300, "port": 30300, "protocol": "TCP", "targetPort": 3000}]}}'
+
+}
+```
+
+Extract the default admin password which will be required to login.
+In the terminal execute the following command:
+
+```shell
+kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+1. Within the Data Sources section, click on the Add your first data source option:
+1. In the Add data source view, select the Prometheus option by clicking on it's Select button:
+1. In the Data Sources / Prometheus configuration view update the HTTP URL to be the same URL that you previously used to browse to the Prometheus web admin interface.
+   Leave all other default settings as is.
+   In particular its important to leave the Name field set to Prometheus.
+   Complete the Prometheus data source setup by clicking on the Save & Test button at the bottom.
+
+1. Return to the IDE. Within the Files tab on the left handside menu, open the `project/code/grafana` directory and click on the `dashboard.json` file to open it within the editor pane.
+   In the editor pane, select all of the configuration and copy it to the clipboard.
+1. Return to Grafana and this time select the Create icon (+) on the main left hand side menu,
+   and then select the dashboard Import option like so:
+1. In the Import view, paste in the copied Grafana dashboard json into the Import via panel json area and then click the Load button:
+1. Under Import Options, accept all defaults without changing anything, and then click the Import button:
+1. Grafana will now load the prebuilt dashboard and start rendering visualisations using live monitoring data streams taken from Prometheus.
+   The dashboard view automatically refreshes every 5 seconds.
