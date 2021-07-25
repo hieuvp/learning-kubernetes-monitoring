@@ -22,6 +22,10 @@ helm install metricbeat ./metricbeat \
   --namespace=elastic-stack \
   --values=metricbeat-values.yaml
 
+helm install filebeat ./filebeat \
+  --namespace=elastic-stack \
+  --values=filebeat-values.yaml
+
 set +x
 
 printf "\n"
