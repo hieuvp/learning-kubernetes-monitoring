@@ -2,7 +2,9 @@
 
 set -eoux pipefail
 
-# minikube start --driver=virtualbox
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# minikube start --driver=virtualbox --cpus=3 --memory=5000
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cd elastic-stack
 
@@ -19,3 +21,15 @@ helm install kibana ./kibana \
 helm install metricbeat ./metricbeat \
   --namespace=elastic-stack \
   --values=metricbeat-values.yaml
+
+set +x
+
+printf "\n"
+echo "kubectl port-forward --namespace=elastic-stack svc/elasticsearch-master 9200"
+echo "Access: http://localhost:9200"
+
+printf "\n"
+echo "kubectl port-forward --namespace=elastic-stack svc/kibana-kibana 5601"
+echo "Access: http://localhost:5601"
+
+printf "\n"
